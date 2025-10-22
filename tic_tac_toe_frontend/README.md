@@ -15,19 +15,23 @@ This application provides a simple, responsive Tic Tac Toe game for two local pl
 
 ## Architecture
 - React 18 + Vite 5 + TypeScript
-- Single top-level App component with local state for board and turn management
-- Presentational Board and Square components driven by props
-- Derived state calculates winner, winning line, and draw
+- App manages state; presentational Board and Square components in `src/components`
+- Winner calculation extracted to `src/lib/calculateWinner.ts`
 - CSS variables and classes implement the Ocean Professional theme
 
 ## Tech
 - React 18 + Vite 5
 - TypeScript
+- ESLint + Prettier
 
 ## Scripts
 - `npm run dev` — start the development server
-- `npm run build` — create a production build
+- `npm run build` — create a production build (also runs `tsc -b`)
 - `npm run preview` — preview the production build locally
+- `npm run lint` — run ESLint
+- `npm run lint:fix` — run ESLint with auto-fix
+- `npm run format` — run Prettier to format
+- `npm run typecheck` — run TypeScript in build mode
 
 ## Getting started
 1. Install dependencies
@@ -39,6 +43,11 @@ This application provides a simple, responsive Tic Tac Toe game for two local pl
    npm run dev
    ```
 3. Open the URL printed in the console (defaults to http://localhost:5173).
+
+## Accessibility
+- Squares are buttons with `aria-pressed` and descriptive `aria-label`s.
+- Status text uses `aria-live="polite"` to announce changes.
+- Focus-visible styles are provided for keyboard users.
 
 ## Theming
 The Ocean Professional theme is applied via CSS variables in `src/styles.css`. Use `var(--primary)` for accents, `var(--secondary)` for win highlights, and keep text/background contrast strong.

@@ -1,67 +1,13 @@
 import React, { useMemo, useState } from 'react'
+import Board from './components/Board'
+import type { Player } from './components/Square'
+import { calculateWinner } from './lib/calculateWinner'
 
-type Player = 'X' | 'O' | null
-
-// Calculate winner given board state
-function calculateWinner(squares: Player[]): { winner: Player; line: number[] | null } {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8], // rows
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8], // cols
-    [0, 4, 8],
-    [2, 4, 6]  // diagonals
-  ]
-  for (const [a, b, c] of lines) {
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], line: [a, b, c] }
-    }
-  }
-  return { winner: null, line: null }
-}
-
-interface SquareProps {
-  value: Player
-  onClick: () => void
-  highlight?: boolean
-}
-
-function Square({ value, onClick, highlight }: SquareProps) {
-  return (
-    <button
-      className={`square ${highlight ? 'square--highlight' : ''} ${value ? 'square--filled' : ''}`}
-      onClick={onClick}
-      aria-label={`Square ${value ?? 'empty'}`}
-    >
-      {value}
-    </button>
-  )
-}
-
-interface BoardProps {
-  squares: Player[]
-  onSquareClick: (i: number) => void
-  highlightLine: number[] | null
-}
-
-function Board({ squares, onSquareClick, highlightLine }: BoardProps) {
-  return (
-    <div className="board" role="grid" aria-label="Tic Tac Toe Board">
-      {squares.map((sq, i) => {
-        const highlight = !!highlightLine?.includes(i)
-        return (
-          <Square
-            key={i}
-            value={sq}
-            onClick={() => onSquareClick(i)}
-            highlight={highlight}
-          />
-        )
-      })}
-    </div>
-  )
+/**
+ * Derived helpers
+ */
+function isNonNull<T>(v: T | null): v is T {
+  return v !== null
 }
 
 // PUBLIC_INTERFACE
@@ -78,12 +24,12 @@ export default function App(): JSX.Element {
    * - Reset clears board and sets X to start
    * Returns the full UI for the game.
    */
-  const [squares, setSquares] = useState<Player[]>(Array(9).fill(null))
+  const [squares, setSquares] = useState<Player[]>(Array<Player>(9).fill(null))
   const [xIsNext, setXIsNext] = useState<boolean>(true)
 
   const { winner, line } = useMemo(() => calculateWinner(squares), [squares])
-  const isBoardFull = useMemo(() => squares.every(Boolean), [squares])
-  const gameOver = !!winner || isBoardFull
+  const isBoardFull = useMemo(() => squares.every(isNonNull), [squares])
+  const gameOver = Boolean(winner) || isBoardFull
 
   const status = winner
     ? `Winner: ${winner}`
@@ -92,21 +38,21 @@ export default function App(): JSX.Element {
       : `Next player: ${xIsNext ? 'X' : 'O'}`
 
   function handleSquareClick(i: number) {
-    if (squares[i] || gameOver) return
+    if (squares[i] !== null || gameOver) return
     const next = squares.slice()
-    next[i] = xIsNext ? 'X' : 'O'
+    next[i] = xIsNext ? 'X' as const : 'O' as const
     setSquares(next)
     setXIsNext(!xIsNext)
   }
 
   function handleReset() {
-    setSquares(Array(9).fill(null))
+    setSquares(Array<Player>(9).fill(null))
     setXIsNext(true)
   }
 
   return (
     <div className="app">
-      <div className="card">
+      <div className="card" role="application" aria-label="Tic Tac Toe game">
         <header className="header">
           <h1 className="title">Tic Tac Toe</h1>
           <p
@@ -117,7 +63,12 @@ export default function App(): JSX.Element {
           </p>
         </header>
 
-        <Board squares={squares} onSquareClick={handleSquareClick} highlightLine={line} />
+        <Board
+          squares={squares}
+          onSquareClick={handleSquareClick}
+          highlightLine={line}
+          disabled={gameOver}
+        />
 
         <div className="controls">
           <button className="btn" onClick={handleReset} aria-label="Reset game">

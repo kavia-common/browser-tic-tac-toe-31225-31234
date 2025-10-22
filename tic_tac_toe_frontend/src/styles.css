@@ -107,7 +107,7 @@ body{
   align-items:center;
   justify-content:center;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background 200ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background 200ms ease, outline-color 120ms ease;
   box-shadow: 0 6px 18px -10px rgba(2,6,23,0.25);
 }
 
@@ -119,6 +119,17 @@ body{
 
 .square:active{
   transform: translateY(0);
+}
+
+.square:focus{
+  outline: none;
+}
+
+.square:focus-visible{
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--ring), 0 16px 36px -18px rgba(37,99,235,0.35);
+  border-color: var(--primary);
 }
 
 .square--filled{
@@ -162,6 +173,15 @@ body{
 
 .btn:active{
   transform: translateY(0);
+}
+
+.btn:focus{
+  outline: none;
+}
+
+.btn:focus-visible{
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
 }
 
 .hint{
