@@ -30,6 +30,12 @@ export default function Square({
       type="button"
       className={`square ${highlight ? 'square--highlight' : ''} ${pressed ? 'square--filled' : ''}`}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          if (!disabled) onClick()
+        }
+      }}
       aria-label={label}
       aria-pressed={pressed}
       disabled={disabled}
